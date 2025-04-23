@@ -6,49 +6,71 @@
 <body>
     <input type="file" id="fileInput" accept="image/*,application/pdf" hidden>
     <button onclick="document.getElementById('fileInput').click()">Выбрать файл</button>
-    <span id="fileName"></span>
-    <button id="sendBtn" disabled>Отправить в бота</button>
+    <button id="sendBtn" disabled>Отправить чек в бота</button>
 
     <script>
         const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
         const fileInput = document.getElementById('fileInput');
         const sendBtn = document.getElementById('sendBtn');
+        let selectedFile = null;
 
-        // Обработчик выбора файла
+        // Выбор файла
         fileInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (!file) return;
+            selectedFile = this.files[0];
+
+            if (!selectedFile) return;
 
             // Проверки файла
-            if (!['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)) {
-                tg.showAlert('Только JPG, PNG или PDF');
+            if (!['image/jpeg', 'image/png', 'application/pdf'].includes(selectedFile.type)) {
+                tg.showAlert('❌ Только JPG, PNG или PDF!');
                 return;
             }
 
-            if (file.size > 5 * 1024 * 1024) {
-                tg.showAlert('Макс. размер 5MB');
+            if (selectedFile.size > 5 * 1024 * 1024) {
+                tg.showAlert('❌ Файл слишком большой! Макс. 5MB');
                 return;
             }
 
-            document.getElementById('fileName').textContent = file.name;
             sendBtn.disabled = false;
         });
 
         // Отправка файла
         sendBtn.addEventListener('click', () => {
-            const file = fileInput.files[0];
+            if (!selectedFile) return;
+
             const reader = new FileReader();
 
-            reader.onload = () => {
-                tg.sendData(JSON.stringify({
-                    file_name: file.name,
-                    mime_type: file.type,
-                    data: reader.result.split(',')[1]
-                }));
-                tg.close();
+            reader.onloadstart = () => {
+                sendBtn.disabled = true;
+                sendBtn.textContent = 'Отправка...';
             };
 
-            reader.readAsDataURL(file);
+            reader.onload = () => {
+                // Отправляем raw base64 без префикса
+                const base64Data = reader.result.split(',')[1];
+
+                tg.sendData(JSON.stringify({
+                    action: 'receipt_upload',
+                    file_name: selectedFile.name,
+                    file_type: selectedFile.type,
+                    data: base64Data
+                }));
+
+                tg.showAlert('✅ Чек успешно отправлен!');
+                sendBtn.textContent = 'Отправлено!';
+                setTimeout(() => tg.close(), 1000);
+            };
+
+            reader.onerror = () => {
+                tg.showAlert('❌ Ошибка при чтении файла');
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Отправить чек в бота';
+            };
+
+            reader.readAsDataURL(selectedFile);
         });
     </script>
 </body>
