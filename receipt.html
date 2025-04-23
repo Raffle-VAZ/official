@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Правильный URL для SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <input type="file" id="fileInput" accept="image/*,application/pdf" hidden>
-    <button onclick="document.getElementById('fileInput').click()">Выбрать файл</button>
+    <button onclick="handleFileSelect()">Выбрать файл</button>
     <button id="sendBtn" disabled>Отправить чек в бота</button>
 
     <script>
-        const tg = window.Telegram.WebApp;
+        // Заглушка для тестирования вне Telegram
+        const tg = window.Telegram?.WebApp || {
+            ready: () => console.log('TG Ready'),
+            expand: () => console.log('TG Expand'),
+            showAlert: (msg) => alert('TG Alert: ' + msg),
+            sendData: (data) => console.log('Sending:', data),
+            close: () => console.log('TG Close')
+        };
+
+        // Инициализация
         tg.ready();
         tg.expand();
 
@@ -17,61 +27,94 @@
         const sendBtn = document.getElementById('sendBtn');
         let selectedFile = null;
 
-        // Выбор файла
+        function handleFileSelect() {
+            fileInput.click();
+        }
+
         fileInput.addEventListener('change', function() {
             selectedFile = this.files[0];
+            console.log('Выбран файл:', selectedFile);
 
-            if (!selectedFile) return;
-
-            // Проверки файла
-            if (!['image/jpeg', 'image/png', 'application/pdf'].includes(selectedFile.type)) {
-                tg.showAlert('❌ Только JPG, PNG или PDF!');
+            if (!selectedFile) {
+                showError('Файл не выбран');
                 return;
             }
 
+            // Проверка типа файла
+            const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+            if (!allowedTypes.includes(selectedFile.type)) {
+                showError('Недопустимый формат файла');
+                return;
+            }
+
+            // Проверка размера файла
             if (selectedFile.size > 5 * 1024 * 1024) {
-                tg.showAlert('❌ Файл слишком большой! Макс. 5MB');
+                showError('Файл слишком большой (макс. 5MB)');
                 return;
             }
 
             sendBtn.disabled = false;
+            sendBtn.style.backgroundColor = '#4CAF50';
         });
 
-        // Отправка файла
-        sendBtn.addEventListener('click', () => {
+        sendBtn.addEventListener('click', async () => {
             if (!selectedFile) return;
 
-            const reader = new FileReader();
+            console.log('Начало отправки...');
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Отправка...';
 
-            reader.onloadstart = () => {
-                sendBtn.disabled = true;
-                sendBtn.textContent = 'Отправка...';
-            };
+            try {
+                const fileData = await readFile(selectedFile);
+                console.log('Данные файла:', fileData.slice(0, 50) + '...');
 
-            reader.onload = () => {
-                // Отправляем raw base64 без префикса
-                const base64Data = reader.result.split(',')[1];
+                // Формируем данные для отправки
+                const payload = {
+                    action: 'receipt',
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    size: selectedFile.size,
+                    data: fileData.split(',')[1]
+                };
 
-                tg.sendData(JSON.stringify({
-                    action: 'receipt_upload',
-                    file_name: selectedFile.name,
-                    file_type: selectedFile.type,
-                    data: base64Data
-                }));
+                // Отправка через Telegram API
+                if (window.Telegram) {
+                    tg.sendData(JSON.stringify(payload));
+                    tg.showAlert('✅ Файл успешно отправлен!');
+                    setTimeout(() => tg.close(), 1500);
+                } else {
+                    console.log('Тестовые данные:', payload);
+                    alert('В режиме тестирования: данные в консоли');
+                }
 
-                tg.showAlert('✅ Чек успешно отправлен!');
                 sendBtn.textContent = 'Отправлено!';
-                setTimeout(() => tg.close(), 1000);
-            };
-
-            reader.onerror = () => {
-                tg.showAlert('❌ Ошибка при чтении файла');
+                sendBtn.style.backgroundColor = '#2196F3';
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showError('Ошибка при отправке файла');
                 sendBtn.disabled = false;
                 sendBtn.textContent = 'Отправить чек в бота';
-            };
-
-            reader.readAsDataURL(selectedFile);
+            }
         });
+
+        // Вспомогательные функции
+        function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (e) => reject(e.target.error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function showError(msg) {
+            console.error(msg);
+            if (window.Telegram) {
+                tg.showAlert('❌ ' + msg);
+            } else {
+                alert(msg);
+            }
+        }
     </script>
 </body>
 </html>
