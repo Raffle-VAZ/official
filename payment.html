@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата билета</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="payment-header">
+            <h1>Оплата билета</h1>
+            <div class="payment-amount">Сумма: <strong>500₽</strong></div>
+        </div>
+
+        <div class="payment-instructions">
+            <p>Произведите оплату по реквизитам:</p>
+
+            <div class="payment-details">
+                <div class="detail-row">
+                    <span class="detail-label">Номер карты:</span>
+                    <span class="detail-value copyable" id="cardNumber">2202 2068 6127 4053</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Получатель:</span>
+                    <span class="detail-value">Ангелина Б.</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Банк получателя:</span>
+                    <span class="detail-value">Сбербанк</span>
+                </div>
+            </div>
+
+            <div class="payment-notice">
+                <p>После оплаты нажмите кнопку подтверждения ниже</p>
+            </div>
+        </div>
+
+        <button class="btn confirm-btn" id="confirmPayment">Подтвердить оплату</button>
+
+        <div class="payment-help">
+            <p>Если возникли проблемы с оплатой, напишите в поддержку</p>
+        </div>
+    </div>
+
+    <script src="payment.js"></script>
+</body>
+</html>
