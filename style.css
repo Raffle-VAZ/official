@@ -135,6 +135,9 @@ body {
 .payment-header {
     text-align: center;
     margin-bottom: 25px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
 }
 
 .payment-header h1 {
@@ -143,81 +146,123 @@ body {
 }
 
 .payment-amount {
-    font-size: 18px;
+    font-size: 20px;
+    margin-bottom: 30px;
 }
 
 .payment-amount strong {
     color: var(--tg-theme-button-color, #2481cc);
-    font-size: 20px;
+    font-size: 24px;
 }
 
-.payment-instructions {
-    background: var(--tg-theme-secondary-bg-color, #f4f4f5);
-    border-radius: 12px;
-    padding: 20px;
+.payment-content {
+    margin-bottom: 30px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.payment-text {
+    text-align: center;
+    font-size: 16px;
     margin-bottom: 20px;
 }
 
-.payment-instructions p {
-    margin-bottom: 15px;
+.payment-card {
+    background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
     text-align: center;
 }
 
-.payment-details {
-    background: white;
-    border-radius: 10px;
-    padding: 15px;
+.payment-card-number {
+    font-size: 22px;
+    font-weight: bold;
     margin-bottom: 15px;
+    word-spacing: 10px;
+    color: var(--tg-theme-text-color, #000000);
+    cursor: pointer;
+    position: relative;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
 }
 
-.detail-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #eee;
+.payment-card-number:hover {
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
-.detail-row:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
+.payment-card-number.copied::after {
+    content: "✓ Скопировано";
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+    color: var(--tg-theme-text-color, #000000);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: normal;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: fadeOut 1.5s forwards 1s;
 }
 
-.detail-label {
-    color: var(--tg-theme-hint-color, #707579);
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        top: -40px;
+    }
 }
 
-.detail-value {
+.payment-card-details {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.payment-important {
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.payment-important p {
+    margin-bottom: 10px;
     font-weight: 500;
 }
 
-.copyable {
-    color: var(--tg-theme-link-color, #2481cc);
+.payment-comment {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--tg-theme-button-color, #2481cc);
+    word-break: break-all;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 500;
+    font-size: 16px;
     cursor: pointer;
-    position: relative;
-    padding-right: 20px;
-}
-
-.copyable::after {
-    content: "📋";
-    position: absolute;
-    right: 0;
-}
-
-.payment-notice {
-    font-size: 14px;
-    color: var(--tg-theme-hint-color, #707579);
     text-align: center;
+    transition: background-color 0.2s, opacity 0.2s;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
 }
 
 .confirm-btn {
+    background: var(--tg-theme-button-color, #2481cc);
+    color: var(--tg-theme-button-text-color, #ffffff);
     margin-top: 10px;
 }
 
-.payment-help {
-    font-size: 13px;
-    color: var(--tg-theme-hint-color, #707579);
-    text-align: center;
-    margin-top: 20px;
+.confirm-btn:active {
+    opacity: 0.8;
 }

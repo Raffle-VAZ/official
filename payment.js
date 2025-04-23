@@ -2,55 +2,50 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-// Копирование номера карты
-document.getElementById('cardNumber').addEventListener('click', function() {
-    const cardNumber = '2202206861274053'; // Без пробелов
-    navigator.clipboard.writeText(cardNumber)
-        .then(() => {
-            tg.showPopup({
-                title: 'Скопировано',
-                message: 'Номер карты скопирован в буфер обмена',
-                buttons: [{ id: 'ok', type: 'ok' }]
-            });
-        })
-        .catch(err => {
-            console.error('Ошибка копирования: ', err);
-        });
-});
-
-// Подтверждение оплаты
-document.getElementById('confirmPayment').addEventListener('click', function() {
-    tg.showPopup({
-        title: 'Подтверждение',
-        message: 'Вы уверены, что произвели оплату?',
-        buttons: [
-            { id: 'cancel', type: 'cancel' },
-            {
-                id: 'confirm',
-                type: 'default',
-                text: 'Да, оплатил(а)'
-            }
-        ]
-    });
-
-    tg.onEvent('popupClosed', function(data) {
-        if (data.button_id === 'confirm') {
-            tg.sendData(JSON.stringify({
-                action: 'payment_confirmed',
-                amount: 500
-            }));
-            tg.close();
-        }
-    });
-});
-
 // Плавное появление элементов
 document.addEventListener('DOMContentLoaded', function() {
-    const elements = document.querySelectorAll('.payment-header, .payment-instructions, .confirm-btn, .payment-help');
+    document.body.style.opacity = '1';
+    document.body.style.transform = 'translateY(0)';
+
+    const elements = document.querySelectorAll('.payment-header, .payment-content, .confirm-btn');
     elements.forEach((el, index) => {
         setTimeout(() => {
             el.style.opacity = '1';
             el.style.transform = 'translateY(0)';
         }, 100 * index);
     });
+
+    // Инициализация копирования номера карты
+    const cardNumber = document.getElementById('cardNumber');
+    cardNumber.addEventListener('click', function() {
+        // Удаляем пробелы для копирования
+        const textToCopy = this.textContent.replace(/\s/g, '');
+
+        // Копируем в буфер обмена
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            // Показываем уведомление в Telegram
+            if (tg.showAlert) {
+                tg.showAlert('Номер карты скопирован');
+            } else {
+                // Fallback для браузера
+                this.classList.add('copied');
+                setTimeout(() => {
+                    this.classList.remove('copied');
+                }, 2500);
+            }
+        }).catch(err => {
+            console.error('Ошибка копирования: ', err);
+            if (tg.showAlert) {
+                tg.showAlert('Не удалось скопировать номер карты');
+            }
+        });
+    });
+});
+
+// Подтверждение оплаты
+document.getElementById('confirmPayment').addEventListener('click', function() {
+    tg.sendData(JSON.stringify({
+        action: 'payment_confirmed'
+    }));
+    tg.close();
 });

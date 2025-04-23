@@ -14,36 +14,24 @@
             <div class="payment-amount">Сумма: <strong>500₽</strong></div>
         </div>
 
-        <div class="payment-instructions">
-            <p>Произведите оплату по реквизитам:</p>
+        <div class="payment-content">
+            <p class="payment-text">Произведите перевод по реквизитам:</p>
 
-            <div class="payment-details">
-                <div class="detail-row">
-                    <span class="detail-label">Номер карты:</span>
-                    <span class="detail-value copyable" id="cardNumber">2202 2068 6127 4053</span>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Получатель:</span>
-                    <span class="detail-value">Ангелина Б.</span>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Банк получателя:</span>
-                    <span class="detail-value">Сбербанк</span>
+            <div class="payment-card">
+                <div class="payment-card-number" id="cardNumber">2202 2068 6127 4053</div>
+                <div class="payment-card-details">
+                    <div>Ангелина Б.</div>
+                    <div>Сбербанк</div>
                 </div>
             </div>
 
-            <div class="payment-notice">
-                <p>После оплаты нажмите кнопку подтверждения ниже</p>
+            <div class="payment-important">
+                <p>❗ Обязательно укажите в комментарии к переводу:</p>
+                <div class="payment-comment">Конкурс ВАЗ-2109</div>
             </div>
         </div>
 
-        <button class="btn confirm-btn" id="confirmPayment">Подтвердить оплату</button>
-
-        <div class="payment-help">
-            <p>Если возникли проблемы с оплатой, напишите в поддержку</p>
-        </div>
+        <button class="btn confirm-btn" id="confirmPayment">Я оплатил(а)</button>
     </div>
 
     <script src="payment.js"></script>
