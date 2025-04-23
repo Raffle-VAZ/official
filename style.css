@@ -266,3 +266,22 @@ body {
 .confirm-btn:active {
     opacity: 0.8;
 }
+
+.back-btn {
+    background: none;
+    border: none;
+    color: var(--tg-theme-button-color, #2481cc);
+    font-size: 16px;
+    padding: 10px 0;
+    margin-bottom: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.back-btn:hover {
+    opacity: 0.8;
+}

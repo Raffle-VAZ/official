@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.opacity = '1';
     document.body.style.transform = 'translateY(0)';
 
-    const elements = document.querySelectorAll('.payment-header, .payment-content, .confirm-btn');
+    const elements = document.querySelectorAll('.back-btn, .payment-header, .payment-content, .confirm-btn');
     elements.forEach((el, index) => {
         setTimeout(() => {
             el.style.opacity = '1';
@@ -18,16 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Инициализация копирования номера карты
     const cardNumber = document.getElementById('cardNumber');
     cardNumber.addEventListener('click', function() {
-        // Удаляем пробелы для копирования
         const textToCopy = this.textContent.replace(/\s/g, '');
-
-        // Копируем в буфер обмена
         navigator.clipboard.writeText(textToCopy).then(() => {
-            // Показываем уведомление в Telegram
             if (tg.showAlert) {
                 tg.showAlert('Номер карты скопирован');
             } else {
-                // Fallback для браузера
                 this.classList.add('copied');
                 setTimeout(() => {
                     this.classList.remove('copied');
@@ -40,6 +35,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Обработка кнопки назад
+    document.getElementById('backButton').addEventListener('click', function() {
+        if (tg.BackButton && tg.BackButton.isVisible) {
+            // Используем нативную кнопку назад Telegram
+            tg.BackButton.onClick(function() {
+                window.location.href = 'index.html';
+            });
+            tg.BackButton.show();
+        } else {
+            // Fallback для браузера или если кнопка недоступна
+            window.location.href = 'index.html';
+        }
+    });
 });
 
 // Подтверждение оплаты
@@ -49,3 +58,10 @@ document.getElementById('confirmPayment').addEventListener('click', function() {
     }));
     tg.close();
 });
+
+// Обработка нативной кнопки назад Telegram
+if (tg.BackButton) {
+    tg.BackButton.onClick(function() {
+        window.location.href = 'index.html';
+    });
+}
