@@ -1,31 +1,55 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Отправка квитанции</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <button id="backButton" class="back-btn">← Назад</button>
+    <input type="file" id="fileInput" accept="image/*,application/pdf" hidden>
+    <button onclick="document.getElementById('fileInput').click()">Выбрать файл</button>
+    <span id="fileName"></span>
+    <button id="sendBtn" disabled>Отправить в бота</button>
 
-        <div class="receipt-container">
-            <div class="emoji-large">📁</div>
-            <h2 class="receipt-title">Пожалуйста, предоставьте квитанцию об оплате</h2>
-            <p class="file-info">1 файл (фото, pdf)</p>
+    <script>
+        const tg = window.Telegram.WebApp;
+        const fileInput = document.getElementById('fileInput');
+        const sendBtn = document.getElementById('sendBtn');
 
-            <div class="upload-area" id="uploadArea">
-                <input type="file" id="fileInput" accept="image/*,application/pdf" hidden />
-                <button class="btn upload-btn" id="chooseFileBtn">Выбрать файл</button>
-                <span id="fileName"></span>
-            </div>
+        // Обработчик выбора файла
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
 
-            <button class="btn confirm-btn" id="sendBtn" disabled>Отправить</button>
-        </div>
-    </div>
+            // Проверки файла
+            if (!['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)) {
+                tg.showAlert('Только JPG, PNG или PDF');
+                return;
+            }
 
-    <script src="receipt.js"></script>
+            if (file.size > 5 * 1024 * 1024) {
+                tg.showAlert('Макс. размер 5MB');
+                return;
+            }
+
+            document.getElementById('fileName').textContent = file.name;
+            sendBtn.disabled = false;
+        });
+
+        // Отправка файла
+        sendBtn.addEventListener('click', () => {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = () => {
+                tg.sendData(JSON.stringify({
+                    file_name: file.name,
+                    mime_type: file.type,
+                    data: reader.result.split(',')[1]
+                }));
+                tg.close();
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
 </body>
 </html>
