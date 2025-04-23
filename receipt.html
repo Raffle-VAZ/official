@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отправка квитанции</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <button id="backButton" class="back-btn">← Назад</button>
+
+        <div class="receipt-container">
+            <div class="emoji-large">📁</div>
+            <h2 class="receipt-title">Пожалуйста, предоставьте квитанцию об оплате</h2>
+            <p class="file-info">1 файл (фото, pdf)</p>
+
+            <div class="upload-area" id="uploadArea">
+                <input type="file" id="fileInput" accept="image/*,application/pdf" hidden />
+                <button class="btn upload-btn" id="chooseFileBtn">Выбрать файл</button>
+                <span id="fileName"></span>
+            </div>
+
+            <button class="btn confirm-btn" id="sendBtn" disabled>Отправить</button>
+        </div>
+    </div>
+
+    <script src="receipt.js"></script>
+</body>
+</html>

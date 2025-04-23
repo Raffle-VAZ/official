@@ -99,3 +99,8 @@ function showCopiedAlert(message, isError = false) {
         }, 2000);
     }
 }
+
+// В конце файла payment.js добавьте:
+document.getElementById('confirmPayment').addEventListener('click', function() {
+    window.location.href = 'receipt.html';
+});
